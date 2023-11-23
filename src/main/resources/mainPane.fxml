@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="252.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.SimulateBridge.ui.controllers.MainPane">
+   <children>
+      <TextField fx:id="mainPaneLength" layoutX="74.0" layoutY="88.0" text="Podaj długość mostu (d)" />
+      <TextField fx:id="mainPaneCapacity" layoutX="365.0" layoutY="88.0" text="Podaj nośność mostu(n)" />
+      <Button onAction="#openSimulateWindow" fx:id="mainPaneStartButton" layoutX="235.0" layoutY="176.0" mnemonicParsing="false" text="Wystartuj Symulacje" />
+   </children>
+</AnchorPane>
