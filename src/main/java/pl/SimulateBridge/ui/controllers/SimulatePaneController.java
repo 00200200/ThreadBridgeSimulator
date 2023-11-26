@@ -4,24 +4,51 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import pl.SimulateBridge.simulation.Bridge;
+import pl.SimulateBridge.simulation.CarGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
 public class SimulatePaneController {
     @FXML
     private VBox simulatePaneQueue;
     @FXML
     private HBox simulatePaneBridge;
-
+    private CarGenerator carGenerator;
+    private Bridge bridge;
     private static final int MaxCarsNumber = 25;
+    public void generateLabels(int bridgeLength,int capacity,int maxCarMass, int maxCarSize) {
+        List<Label> bridgeLabels = new ArrayList<>();
+        List<Label> queueLabels = new ArrayList<>();
+        for (int i = 0; i < bridgeLength + 2; i++) {
+            Label label = new Label(".");
 
-    public void generateLabels(int bridgeLength) {
+            if(i == 0){
+                label.setText("[");
+            }
+            if(i == bridgeLength +1){
+                label.setText("]");
+            }
 
-        for (int i = 0; i < bridgeLength; i++) {
-            Label label = new Label(Character.toString((char) ('a' + i)));
+            bridgeLabels.add(label);
             simulatePaneBridge.getChildren().add(label);
         }
         for (int i = bridgeLength; i < MaxCarsNumber; i++) {
-            Label label = new Label(Character.toString((char) ('a' + i)));
+            Label label = new Label(".");
+            queueLabels.add(label);
             simulatePaneQueue.getChildren().add(label);
         }
+        bridge = new Bridge(capacity,bridgeLength,bridgeLabels,queueLabels);
+        carGenerator = new CarGenerator();
+        startSimulation(capacity,bridgeLength,maxCarMass,maxCarSize);
+    }
+    public void startSimulation(int maxMass,int bridgeLength,int maxCarMass,int maxCarSize){
+        new Thread(() -> {
+            try{
+                carGenerator.generateVehicle(bridge,maxMass,bridgeLength,maxCarMass,maxCarSize);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }
