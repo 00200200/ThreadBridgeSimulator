@@ -20,14 +20,16 @@ public class SimulatePaneController {
     public void generateLabels(int bridgeLength,int capacity,int maxCarMass, int maxCarSize) {
         List<Label> bridgeLabels = new ArrayList<>();
         List<Label> queueLabels = new ArrayList<>();
-        for (int i = 0; i < bridgeLength + 2; i++) {
+        List<Label> allLabels = new ArrayList<>();
+
+        for (int i = 0; i < bridgeLength; i++) {
             Label label = new Label(".");
 
             if(i == 0){
-                label.setText("[");
+                label.setText("[.");
             }
-            if(i == bridgeLength +1){
-                label.setText("]");
+            if(i == bridgeLength -1){
+                label.setText(".]");
             }
 
             bridgeLabels.add(label);
@@ -36,9 +38,14 @@ public class SimulatePaneController {
         for (int i = bridgeLength; i < MaxCarsNumber; i++) {
             Label label = new Label(".");
             queueLabels.add(label);
+            allLabels.add(label);
             simulatePaneQueue.getChildren().add(label);
         }
-        bridge = new Bridge(capacity,bridgeLength,bridgeLabels,queueLabels);
+        for(Label label : bridgeLabels){
+            allLabels.add(label);
+        }
+
+        bridge = new Bridge(capacity,bridgeLength,bridgeLabels,queueLabels,allLabels);
         carGenerator = new CarGenerator();
         startSimulation(capacity,bridgeLength,maxCarMass,maxCarSize);
     }
