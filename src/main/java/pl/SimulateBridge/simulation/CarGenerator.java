@@ -9,10 +9,8 @@ public class CarGenerator {
     private char nextChar = 'a';
     public void generateVehicle(Bridge bridge, int maxMass,int length,int maxCarMass,int maxCarSize) throws InterruptedException {
         new Thread(() -> {
-            System.out.println("WATEK CAR GENERATOR");
             while (true) {
                 if (bridge.allLabels.get(0).getText() == "." && cars.size() < 25) {
-                    System.out.println("CAR GENERATOR");
                     int mass = new Random().nextInt(maxCarMass) + 1;
                     int size = new Random().nextInt(maxCarSize) + 1;
                     Car car = new Car(mass, nextChar, bridge, size);
