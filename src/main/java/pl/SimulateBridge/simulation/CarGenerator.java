@@ -22,7 +22,7 @@ public class CarGenerator {
                     }
                 }
                 try {
-                    Thread.sleep(750);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

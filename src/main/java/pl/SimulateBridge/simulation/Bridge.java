@@ -34,6 +34,8 @@ public class Bridge {
 
     public synchronized void exit(Car car){
         currentCapacity -= car.getMass();
-        carsOnBridge -= car.getSize();
+        carsOnBridge -= car.getMainSize();
+        System.out.println(currentCapacity);
+        System.out.println(carsOnBridge);
     }
 }

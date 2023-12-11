@@ -8,6 +8,9 @@ public class Car extends Thread {
     private final char identifier;
     private int index;
     private int size;
+
+    private int mainSize;
+
     private Bridge bridge;
 
     public int getMass() {
@@ -32,6 +35,14 @@ public class Car extends Thread {
 
     public void setBridge(Bridge bridge) {
         this.bridge = bridge;
+    }
+
+    public int getMainSize() {
+        return mainSize;
+    }
+
+    public void setMainSize(int mainSize) {
+        this.mainSize = mainSize;
     }
 
     private enum State {
@@ -60,6 +71,7 @@ public class Car extends Thread {
         this.bridge = bridge;
         this.index = 0;
         this.state = State.Queue;
+        this.mainSize = size;
     }
 
     @Override
@@ -81,7 +93,7 @@ public class Car extends Thread {
                         break;
 
                 }
-                Thread.sleep(666);
+                Thread.sleep(111);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -171,10 +183,12 @@ public class Car extends Thread {
             size = size -1;
             if(size == 0){
                 state = State.Finished;
+                CarGenerator.cars.remove(this);
+                bridge.exit(this);
             }
         });
-        CarGenerator.cars.remove(this);
-        bridge.exit(this);
+
+
     }
 
     ;
