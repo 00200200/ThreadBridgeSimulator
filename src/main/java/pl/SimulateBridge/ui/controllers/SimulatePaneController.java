@@ -47,12 +47,12 @@ public class SimulatePaneController {
 
         bridge = new Bridge(capacity,bridgeLength,bridgeLabels,queueLabels,allLabels);
         carGenerator = new CarGenerator();
-        startSimulation(capacity,bridgeLength,maxCarMass,maxCarSize);
+        startSimulation(maxCarMass,maxCarSize);
     }
-    public void startSimulation(int maxMass,int bridgeLength,int maxCarMass,int maxCarSize){
+    public void startSimulation(int maxCarMass,int maxCarSize){
         new Thread(() -> {
             try{
-                carGenerator.generateVehicle(bridge,maxMass,bridgeLength,maxCarMass,maxCarSize);
+                carGenerator.generateVehicle(bridge,maxCarMass,maxCarSize);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

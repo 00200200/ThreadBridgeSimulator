@@ -9,9 +9,9 @@ public class Car extends Thread {
     private int index;
     private int size;
 
-    private int mainSize;
+    private final int mainSize;
 
-    private Bridge bridge;
+    private final Bridge bridge;
 
     public int getMass() {
         return mass;
@@ -21,28 +21,10 @@ public class Car extends Thread {
         return identifier;
     }
 
-    public int getIndex() {
-        return index;
-    }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public Bridge getBridge() {
-        return bridge;
-    }
-
-    public void setBridge(Bridge bridge) {
-        this.bridge = bridge;
-    }
 
     public int getMainSize() {
         return mainSize;
-    }
-
-    public void setMainSize(int mainSize) {
-        this.mainSize = mainSize;
     }
 
     private enum State {
@@ -50,15 +32,6 @@ public class Car extends Thread {
     }
 
     private State state;
-
-//    private String getString() {
-//        String str = "";
-//        for (int i = 0; i < size; i++) {
-//            str += getIdentifier();
-//        }
-//        return str;
-//    }
-
 
     public int getSize() {
         return size;
@@ -101,18 +74,22 @@ public class Car extends Thread {
     }
 
     private void enterBridge() {
-        if (bridge.enter(this)) {
-            Platform.runLater(() -> {
-                Label currentLabel = bridge.bridgeLabels.get(0);
-                if (currentLabel.getText() == "[.") {
-                    Label lastLabel = bridge.queueLabels.get(index - size);
-                    lastLabel.setText(".");
-                    currentLabel.setText("[" + getIdentifier());
-                    index += 1;
-                    this.state = State.MoveOnBridge;
+        synchronized (bridge){
+            if(!bridge.enter(this)){
+                return;
+            }
+        }
+
+        Platform.runLater(() -> {
+            Label currentLabel = bridge.bridgeLabels.get(0);
+            if (currentLabel.getText().equals("[.")) {
+                Label lastLabel = bridge.queueLabels.get(index - size);
+                lastLabel.setText(".");
+                currentLabel.setText("[" + getIdentifier());
+                index += 1;
+                this.state = State.MoveOnBridge;
                 }
             });
-        }
         System.out.println("ENTER: " + getIdentifier());
     }
 
@@ -123,13 +100,13 @@ public class Car extends Thread {
         }
         Label currentLabel = bridge.allLabels.get(index);
         Platform.runLater(() -> {
-            if (currentLabel.getText() == "." || currentLabel.getText() == ".]") {
+            if (currentLabel.getText().equals(".") || currentLabel.getText().equals(".]")) {
 
-                if(currentLabel.getText() == "."){
+                if(currentLabel.getText().equals(".")){
                     currentLabel.setText(String.valueOf(getIdentifier()));
                 }
-                if(currentLabel.getText() == ".]"){
-                    currentLabel.setText(String.valueOf(getIdentifier()) + "]");
+                if(currentLabel.getText().equals(".]")){
+                    currentLabel.setText(getIdentifier() + "]");
                 }
                 Label lastLabel = bridge.allLabels.get(index - size);
                 if (lastLabel.getText().equals("[" + getIdentifier())) {
@@ -142,7 +119,6 @@ public class Car extends Thread {
         });
 
     }
-
     private void move() {
         if (index == bridge.queueLabels.size()) {
             this.state = State.ReadyToEnter;
@@ -150,7 +126,7 @@ public class Car extends Thread {
         }
         Label currentLabel = bridge.queueLabels.get(index);
         Platform.runLater(() -> {
-            if (currentLabel.getText() == "." || currentLabel.getText().equals(String.valueOf(getIdentifier()))) {
+            if (currentLabel.getText().equals(".") || currentLabel.getText().equals(String.valueOf(getIdentifier()))) {
                 moveHe();
                 index += 1;
             }

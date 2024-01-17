@@ -21,21 +21,24 @@ public class Bridge {
         this.queueLabels = queueLabels;
         this.currentCapacity = 0;
         this.allLabels = allLabels;
-    };
+    }
 
     public synchronized boolean enter(Car car){
-        if(currentCapacity + car.getMass() > maxCapacity || carsOnBridge + car.getSize() > length ){
-            return false;
-        }
+        while(currentCapacity + car.getMass() > maxCapacity || carsOnBridge + car.getSize() > length)
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         currentCapacity += car.getMass();
         carsOnBridge += car.getSize();
         return true;
     }
 
+
     public synchronized void exit(Car car){
         currentCapacity -= car.getMass();
         carsOnBridge -= car.getMainSize();
-        System.out.println(currentCapacity);
-        System.out.println(carsOnBridge);
+        notifyAll();
     }
 }
