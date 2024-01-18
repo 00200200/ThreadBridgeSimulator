@@ -1,43 +1,41 @@
 package pl.SimulateBridge.simulation;
-
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-
 public class Car extends Thread {
     private final int mass;
     private final char identifier;
+    public int getIndex() {
+        return index;
+    }
+    public State setState(State state) {
+        this.state = state;
+        return state;
+    }
+    private State state;
+    public void setIndex(int index) {
+        this.index = index;
+    }
     private int index;
     private int size;
-
     private final int mainSize;
-
     private final Bridge bridge;
-
     public int getMass() {
         return mass;
     }
-
     public char getIdentifier() {
         return identifier;
     }
-
-
-
     public int getMainSize() {
         return mainSize;
     }
-
-    private enum State {
+    enum State {
         Queue, ReadyToEnter, MoveOnBridge, Exit, Finished
     }
-
-    private State state;
-
+    private Road road;
     public int getSize() {
         return size;
     }
-
-    public Car(int mass, char identifier, Bridge bridge, int size) {
+    public Car(int mass, char identifier, Bridge bridge, int size,Road road) {
         this.mass = mass;
         this.size = size;
         this.identifier = identifier;
@@ -45,6 +43,7 @@ public class Car extends Thread {
         this.index = 0;
         this.state = State.Queue;
         this.mainSize = size;
+        this.road = road;
     }
 
     @Override
@@ -53,18 +52,17 @@ public class Car extends Thread {
             while (state != State.Finished) {
                 switch (state) {
                     case Queue:
-                        move();
+                        road.move(this);
                         break;
                     case ReadyToEnter:
                         enterBridge();
                         break;
                     case MoveOnBridge:
-                        moveOnBridge();
+                        bridge.moveOnBridge(this);
                         break;
                     case Exit:
                         exit();
                         break;
-
                 }
                 Thread.sleep(111);
             }
@@ -72,14 +70,12 @@ public class Car extends Thread {
             throw new RuntimeException(e);
         }
     }
-
     private void enterBridge() {
         synchronized (bridge){
             if(!bridge.enter(this)){
                 return;
             }
         }
-
         Platform.runLater(() -> {
             Label currentLabel = bridge.bridgeLabels.get(0);
             if (currentLabel.getText().equals("[.")) {
@@ -92,60 +88,6 @@ public class Car extends Thread {
             });
         System.out.println("ENTER: " + getIdentifier());
     }
-
-    private void moveOnBridge() {
-        if (index >= bridge.allLabels.size()) {
-            this.state = State.Exit;
-            return;
-        }
-        Label currentLabel = bridge.allLabels.get(index);
-        Platform.runLater(() -> {
-            if (currentLabel.getText().equals(".") || currentLabel.getText().equals(".]")) {
-
-                if(currentLabel.getText().equals(".")){
-                    currentLabel.setText(String.valueOf(getIdentifier()));
-                }
-                if(currentLabel.getText().equals(".]")){
-                    currentLabel.setText(getIdentifier() + "]");
-                }
-                Label lastLabel = bridge.allLabels.get(index - size);
-                if (lastLabel.getText().equals("[" + getIdentifier())) {
-                    lastLabel.setText("[.");
-                } else {
-                    lastLabel.setText(".");
-                }
-                index += 1;
-            }
-        });
-
-    }
-    private void move() {
-        if (index == bridge.queueLabels.size()) {
-            this.state = State.ReadyToEnter;
-            return;
-        }
-        Label currentLabel = bridge.queueLabels.get(index);
-        Platform.runLater(() -> {
-            if (currentLabel.getText().equals(".") || currentLabel.getText().equals(String.valueOf(getIdentifier()))) {
-                moveHe();
-                index += 1;
-            }
-        });
-    }
-
-    private void moveHe() {
-        for (int i = 0; i < size; i++) {
-            if (index - i >= 0) {
-                Label currentLabel = bridge.queueLabels.get(index - i);
-                currentLabel.setText(String.valueOf(getIdentifier()));
-            }
-        }
-        if (index - size >= 0) {
-            Label lastLabel = bridge.queueLabels.get(index - size);
-            lastLabel.setText(".");
-        }
-    }
-
     private void exit() {
         System.out.println("EXIT");
         Platform.runLater(() -> {
@@ -163,10 +105,5 @@ public class Car extends Thread {
                 bridge.exit(this);
             }
         });
-
-
     }
-
-    ;
-
 }

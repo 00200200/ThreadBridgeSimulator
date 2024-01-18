@@ -2,17 +2,16 @@ package pl.SimulateBridge.simulation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 public class CarGenerator {
     public static List<Car> cars = new ArrayList<>();
     private char nextChar = 'a';
-    public void generateVehicle(Bridge bridge,int maxCarMass,int maxCarSize) throws InterruptedException {
+    public void generateVehicle(Bridge bridge,int maxCarMass,int maxCarSize,Road road) throws InterruptedException {
         new Thread(() -> {
             while (true) {
                 if (bridge.allLabels.get(0).getText().equals(".") && cars.size() < 25) {
                     int mass = new Random().nextInt(maxCarMass) + 1;
                     int size = new Random().nextInt(maxCarSize) + 1;
-                    Car car = new Car(mass, nextChar, bridge, size);
+                    Car car = new Car(mass, nextChar, bridge, size,road);
                     cars.add(car);
                     car.start();
                     nextChar = (char) (nextChar + 1);

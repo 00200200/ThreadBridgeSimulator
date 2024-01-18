@@ -1,12 +1,11 @@
 package pl.SimulateBridge.ui.controllers;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pl.SimulateBridge.simulation.Bridge;
 import pl.SimulateBridge.simulation.CarGenerator;
-
+import pl.SimulateBridge.simulation.Road;
 import java.util.ArrayList;
 import java.util.List;
 public class SimulatePaneController {
@@ -44,15 +43,15 @@ public class SimulatePaneController {
         for(Label label : bridgeLabels){
             allLabels.add(label);
         }
-
+        Road road = new Road(queueLabels);
         bridge = new Bridge(capacity,bridgeLength,bridgeLabels,queueLabels,allLabels);
         carGenerator = new CarGenerator();
-        startSimulation(maxCarMass,maxCarSize);
+        startSimulation(maxCarMass,maxCarSize,road);
     }
-    public void startSimulation(int maxCarMass,int maxCarSize){
+    public void startSimulation(int maxCarMass,int maxCarSize,Road road){
         new Thread(() -> {
             try{
-                carGenerator.generateVehicle(bridge,maxCarMass,maxCarSize);
+                carGenerator.generateVehicle(bridge,maxCarMass,maxCarSize,road);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
